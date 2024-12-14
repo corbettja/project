@@ -1,0 +1,150 @@
+--clean up
+DROP TABLE buyer CASACADE CONSTRAINTS;
+DROP TABLE salesperson CASACADE CONSTRAINTS;
+DROP TABLE lead CASACADE CONSTRAINTS;
+DROP TABLE vehicle CASACADE CONSTRAINTS;
+DROP TABLE saleID CASACADE CONSTRAINTS;
+DROP TABLE service CASACADE CONSTRAINTS;
+DROP TABLE mechanic CASACADE CONSTRAINTS;
+DROP TABLE park CASACADE CONSTRAINTS;
+DROP TABLE partpurchase CASACADE CONSTRAINTS;
+DROP TABLE servicerecord CASACADE CONSTRAINTS;
+
+--create
+CREATE TABLE buyer (
+	buyerID INT,
+	first_name VARCHAR2(50),
+	last_name VARCHAR2(50),
+	address VARCHAR2(50),
+	phone_number INT,
+	email address VARCHAR(50),
+	coupon_code VARCHAR2(50),
+	referrerID INT,
+	PRIMARY KEY (buyerID),
+	FOREIGN KEY (referrerID) REFERENCES buyer(buyerID)
+);
+
+DESCRIBE buyer;
+
+CREATE TABLE salesperson (
+	salespersonID INT,
+	first_name VARCHAR2(50),
+	last_name VARCHAR2(50),
+	address VARCHAR2(50),
+	phone_number INT,
+	company_email VARCHAR2(30),
+	commission INT,
+	PRIMARY KEY (salespersonID)
+);
+
+DESCRIBE salesperson;
+
+CREATE TABLE lead (
+	leadID INT,
+	phone_number INT,
+	first_name VARCHAR2(50),
+	last_name VARCHAR2(50),
+	notes VARCHAR2(200),
+	salespersonID INT,
+	PRIMARY KEY (leadID),
+	FOREIGN KEY (salespersonID) REFERENCES salesperson(salespersonID)
+);
+
+DESCRIBE lead;
+
+CREATE TABLE vehicle (
+	vin VARCHAR2(50),
+	number_cylinders NUMBER(1),
+	number_cycles NUMBER(1),
+	number_passengers NUMBER(1),
+	gps CHAR(1) CHECK(gps IN ('Y', 'N')),
+	vehicle_type VARCHAR2(50),
+	make VARCHAR2(50),
+	model VARCHAR2(50),
+	miles NUMBER(6),
+	PRIMARY KEY (vin)
+);
+
+DESCRIBE vehicle;
+
+CREATE TABLE sale (
+	saleID INT,
+	date DATE,
+	domuments VARCHAR2(200),
+	payment_type VARCHAR2(50),
+	cost NUMBER(6,2),
+	payment_plan_period DATE,
+	commission_value INT,
+	vin VARCHAR2(50),
+	buyerID INT,
+	salespersonID INT,
+	PRIMARY KEY saleID,
+	FOREIGN KEY (leadID) REFERENCES lead(leadID)
+	FOREIGN KEY (vin) REFERENCES vehicle(vin),
+	FOREIGN KEY (buyerID) REFERENCES buyer(buyerID),
+	FOREIGN KEY (salespersonID) REFERENCES salesperson(salespersonID)
+);
+
+DESCRIBE sale;
+
+CREATE TABLE service (
+	serviceID INT,
+	service_name VARCHAR2(50),
+	service_duration TIME,
+	service_date DATE,
+	service cost NUMBER(5,2),
+	PRIMARY KEY (serviceID)
+);
+
+DESCRIBE service;
+
+CREATE TABLE mechanic (
+	mechanicID INT,
+	first_name VARCHAR2(50),
+	last_name VARCHAR2(50),
+	address VARCHAR2(50),
+	phone_number INT,
+	email_address VARCHAR2(50),
+	PRIMARY KEY (mechanicID)
+);
+
+DESCRIBE mechanic;
+
+CREATE TABLE part (
+	partSKU INT,
+	type VARCHAR2(25),
+	length_inches NUMBER(3,2),
+	width_inches NUMBER(3,2),
+	height_inches NUMBER(3,2),
+	PRIMARY KEY (partSKU)
+);
+
+DESCRIBE part;
+
+CREATE TABLE partpurchase (
+	invoice_number INT,
+	parkSKU INT,	
+	price NUMBER(6,2)
+	purchase_date DATE,
+	PRIMARY KEY (invoice_number, partSKU)
+	FOREIGN KEY (invoice_number) REFERENCES servicerecord(invoice_number),
+	FOREIGN KEY (partSKU) REFERENCES part(partSKU)
+);
+
+DESCRIBE partpurchase;
+
+CREATE TABLE servicerecord (
+	invoice_number INT,
+	total_service_hour NUMBER(3,2),
+	serviceID INT,
+	vin INT,
+	mechanicID INT,
+	PRIMARY KEY (invoice_number),
+	FOREIGN KEY (serviceID) REFERENCES service(serivceID),
+	FOREIGN KEY (vin) REFERENCES vehicle(vin),
+	FOREIGN KEY (mechanicID) REFERENCES mechanic(mechanicID),
+);
+
+DESCRIBE servicerecord;
+
+--insert
